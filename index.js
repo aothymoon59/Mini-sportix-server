@@ -36,9 +36,16 @@ async function run() {
     });
 
     // add toy to database
-    app.post("/toy", async (req, res) => {
+    app.post("/toys", async (req, res) => {
       const newToy = req.body;
       const result = await toysCollection.insertOne(newToy);
+      res.send(result);
+    });
+
+    // read all toys data from database
+    app.get("/toys", async (req, res) => {
+      const cursor = toysCollection.find().limit(20);
+      const result = await cursor.toArray();
       res.send(result);
     });
 
