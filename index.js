@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -18,20 +18,12 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  maxPoolSize: 10,
 });
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    client.connect((err) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-    });
+    client.connect();
 
     const galleryCollection = client.db("miniSportixDB").collection("gallery");
     const toysCollection = client.db("miniSportixDB").collection("toys");
@@ -79,6 +71,14 @@ async function run() {
       const result = await toysCollection
         .find({ sellerEmail: req.params.email })
         .toArray();
+      res.send(result);
+    });
+
+    // delete user toy
+    app.delete("/toys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toysCollection.deleteOne(query);
       res.send(result);
     });
 
