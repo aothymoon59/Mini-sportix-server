@@ -28,6 +28,22 @@ async function run() {
     const galleryCollection = client.db("miniSportixDB").collection("gallery");
     const toysCollection = client.db("miniSportixDB").collection("toys");
 
+    // creating index for toy name field
+    const indexKeys = { toyName: 1 };
+    const indexOptions = { name: "toyName" };
+    const result = await toysCollection.createIndex(indexKeys, indexOptions);
+
+    // search implement
+    app.get("/toySearchByName/:text", async (req, res) => {
+      const searchText = req.params.text;
+      const result = await toysCollection
+        .find({
+          $or: [{ toyName: { $regex: searchText, $options: "i" } }],
+        })
+        .toArray();
+      res.send(result);
+    });
+
     // gallery data read
     app.get("/gallery", async (req, res) => {
       const cursor = galleryCollection.find();
