@@ -18,12 +18,20 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   },
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  maxPoolSize: 10,
 });
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    client.connect();
+    client.connect((err) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
 
     const galleryCollection = client.db("miniSportixDB").collection("gallery");
     const toysCollection = client.db("miniSportixDB").collection("toys");
@@ -62,6 +70,15 @@ async function run() {
     app.get("/toys", async (req, res) => {
       const cursor = toysCollection.find().limit(20);
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // read specific user data
+    app.get("/myToys/:email", async (req, res) => {
+      console.log(req.params.email);
+      const result = await toysCollection
+        .find({ sellerEmail: req.params.email })
+        .toArray();
       res.send(result);
     });
 
