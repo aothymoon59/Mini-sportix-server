@@ -26,10 +26,19 @@ async function run() {
     client.connect();
 
     const galleryCollection = client.db("miniSportixDB").collection("gallery");
+    const toysCollection = client.db("miniSportixDB").collection("toys");
 
+    // gallery data read
     app.get("/gallery", async (req, res) => {
       const cursor = galleryCollection.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // add toy to database
+    app.post("/toy", async (req, res) => {
+      const newToy = req.body;
+      const result = await toysCollection.insertOne(newToy);
       res.send(result);
     });
 
