@@ -24,6 +24,15 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     client.connect();
+
+    const galleryCollection = client.db("miniSportixDB").collection("gallery");
+
+    app.get("/gallery", async (req, res) => {
+      const cursor = galleryCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -31,15 +40,15 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Toy server is running");
+  res.send("MiniSportix server is running");
 });
 
 app.listen(port, () => {
-  console.log(`Toy server is running on port: ${port}`);
+  console.log(`MiniSportix server is running on port: ${port}`);
 });
