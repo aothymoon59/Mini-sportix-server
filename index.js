@@ -51,13 +51,6 @@ async function run() {
       res.json(result);
     });
 
-    // add toy to database
-    app.post("/toys", async (req, res) => {
-      const newToy = req.body;
-      const result = await toysCollection.insertOne(newToy);
-      res.json(result);
-    });
-
     // read all toys data from database
     app.get("/toys", async (req, res) => {
       const cursor = toysCollection.find().limit(20);
@@ -74,6 +67,30 @@ async function run() {
       res.json(result);
     });
 
+    //read data for update user toy
+    app.get("/toys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toysCollection.findOne(query);
+      res.json(result);
+    });
+
+    // Get filtered toys data by category
+    app.get("/toys/category/:text", async (req, res) => {
+      const category = req.params.text;
+      const result = await toysCollection
+        .find({ subCategory: category })
+        .toArray();
+      res.json(result);
+    });
+
+    // add toy to database
+    app.post("/toys", async (req, res) => {
+      const newToy = req.body;
+      const result = await toysCollection.insertOne(newToy);
+      res.json(result);
+    });
+
     // delete user toy
     app.delete("/toys/:id", async (req, res) => {
       const id = req.params.id;
@@ -83,13 +100,6 @@ async function run() {
     });
 
     // update user toy
-    app.get("/toys/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await toysCollection.findOne(query);
-      res.json(result);
-    });
-
     app.put("/toys/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -105,12 +115,6 @@ async function run() {
       const result = await toysCollection.updateOne(filter, coffee, options);
       res.json(result);
     });
-
-    // Send a ping to confirm a successful connection
-    // await client.db("admin").command({ ping: 1 });
-    // console.log(
-    //   "Pinged your deployment. You successfully connected to MongoDB!"
-    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
