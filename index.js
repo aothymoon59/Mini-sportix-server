@@ -60,9 +60,11 @@ async function run() {
 
     // read specific user data
     app.get("/myToys/:email", async (req, res) => {
-      console.log(req.params.email);
+      const sort = req?.query?.selected == "descending" ? 1 : -1;
+
       const result = await toysCollection
         .find({ sellerEmail: req.params.email })
+        .sort({ price: sort })
         .toArray();
       res.json(result);
     });
